@@ -1,0 +1,17 @@
+[package]
+name = "igs_postexp"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.4.6", features = ["derive"] }
+clipboard-win = "4.5.0"
+config = "0.13.3"
+env_logger = "0.10.0"
+log = "0.4.20"
+serde = { version = "1.0.189", features = ["derive"] }
+serde_yaml = "0.9.25"
+whoami = "1.4.1"
+utils = { path = "../utils" }
