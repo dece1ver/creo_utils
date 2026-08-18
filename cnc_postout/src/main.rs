@@ -17,22 +17,33 @@ fn main() -> Result<(), Box<dyn Error>> {
         Ok(files) => {
             if let Some(lastest) = files.lastest() {
                 info!("Последний файл УП: {:?}", lastest.file_name());
-                info!("Открытие УП в Cimco Edit");
-                match Command::new(&config.cimco_path).arg(lastest.path()).spawn() {
-                    Ok(output) => debug!("{output:#?}"),
-                    Err(e) => {
-                        warn!("Не удалось открыть УП в Cimco Edit. Открытие резервной программой.");
-                        debug!("{e}");
-                        match Command::new(&config.fallback_program)
-                            .arg(lastest.path())
-                            .spawn()
-                        {
-                            Ok(output) => debug!("{output:#?}"),
+                if config.use_default_program {
+                    info!("Открытие УП программой по умолчанию");
+                    match Command::new(lastest.path()).spawn() {
+                        Ok(output) => debug!("{output:#?}"),
+                        Err(e) => {
+                            warn!("Не удалось открыть УП программой по умолчанию.");
+                            debug!("{e}");
+                        }
+                    }
+                } else {
+                    let mut opened = false;
+                    for program in &config.fallback_programs {
+                        info!("Попытка открытия УП в {program}");
+                        match Command::new(program).arg(lastest.path()).spawn() {
+                            Ok(output) => {
+                                debug!("{output:#?}");
+                                opened = true;
+                                break;
+                            }
                             Err(e) => {
-                                warn!("Не удалось запустить резервной программой.");
-                                debug!("{e:#?}")
+                                warn!("Не удалось открыть УП в {program}.");
+                                debug!("{e}");
                             }
                         }
+                    }
+                    if !opened {
+                        warn!("Не удалось открыть УП ни одной из программ.");
                     }
                 }
             } else {

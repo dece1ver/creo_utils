@@ -10,9 +10,12 @@ use std::{
     path::Path,
 };
 
+/// Путь к директории конфигурации IGS Postexp.
 pub const CONFIG_DIR: &str = "C:\\ProgramData\\dece1ver\\IGS Postexp\\";
+/// Путь к файлу конфигурации IGS Postexp.
 pub const CONFIG_PATH: &str = "C:\\ProgramData\\dece1ver\\IGS Postexp\\config.yml";
 
+/// Аргументы командной строки.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
@@ -29,10 +32,14 @@ pub struct Args {
     pub config: bool,
 }
 
+/// Конфигурация приложения IGS Postexp.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub struct AppConfig {
+    /// Путь к папке вывода IGS-файлов.
     pub output_path: String,
+    /// Очищать логи при запуске.
     pub clear_logs: bool,
+    /// Автозакрытие окна после выполнения.
     pub autoclose: bool,
 }
 
@@ -57,6 +64,10 @@ impl Display for AppConfig {
     }
 }
 
+/// Загружает конфигурацию из YAML-файла.
+///
+/// Если файл конфигурации не существует, создаёт его с настройками по умолчанию.
+/// При ошибке чтения удаляет повреждённый файл и создаёт заново.
 pub fn load_config() -> Result<AppConfig, Box<dyn Error>> {
     if !Path::new(CONFIG_PATH).exists() {
         debug!("file not exists");
