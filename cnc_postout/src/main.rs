@@ -17,20 +17,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         Ok(files) => {
             if let Some(lastest) = files.lastest() {
                 info!("Последний файл УП: {:?}", lastest.file_name());
+                let path = lastest.path();
+                let mut opened = false;
                 if config.use_default_program {
                     info!("Открытие УП программой по умолчанию");
-                    match Command::new(lastest.path()).spawn() {
-                        Ok(output) => debug!("{output:#?}"),
+                    match open::that_detached(&path) {
+                        Ok(()) => opened = true,
                         Err(e) => {
                             warn!("Не удалось открыть УП программой по умолчанию.");
                             debug!("{e}");
                         }
                     }
-                } else {
-                    let mut opened = false;
+                }
+                if !opened {
                     for program in &config.fallback_programs {
                         info!("Попытка открытия УП в {program}");
-                        match Command::new(program).arg(lastest.path()).spawn() {
+                        match Command::new(program).arg(&path).spawn() {
                             Ok(output) => {
                                 debug!("{output:#?}");
                                 opened = true;

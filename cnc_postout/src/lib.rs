@@ -37,7 +37,10 @@ pub struct Args {
 pub struct AppConfig {
     /// Использовать программу по умолчанию (ассоциацию системы) для открытия УП.
     pub use_default_program: bool,
-    /// Список программ для попытки открытия УП (при `use_default_program == false`).
+    /// Список программ для попытки открытия УП.
+    ///
+    /// Используется, если `use_default_program == false` либо если открытие
+    /// программой по умолчанию завершилось ошибкой.
     pub fallback_programs: Vec<String>,
     /// Путь к папке вывода NC-файлов.
     pub output_path: String,
